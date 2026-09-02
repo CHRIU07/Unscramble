@@ -10,13 +10,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.todolistapp.ui.theme.ToDoListAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -32,25 +29,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun GameScreen() {
-    var userAnswer by remember {
-        mutableStateOf("")
-    }
-
-    val words = listOf(
-        "CAT",
-        "DOG",
-        "BOOK"
-    )
-
-    var currentWordIndex by remember {
-        mutableStateOf(0)
-    }
-
-    val correctAnswer = words[currentWordIndex]
-
-    var score by remember {
-        mutableStateOf(0)
-    }
+    val viewModel: GameViewModel = viewModel()
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -63,7 +42,7 @@ fun GameScreen() {
         )
 
         Text(
-            text = correctAnswer,
+            text = viewModel.words[viewModel.currentWordIndex],
             fontSize = 40.sp
         )
 
@@ -72,9 +51,9 @@ fun GameScreen() {
         )
 
         OutlinedTextField(
-            value = userAnswer,
+            value = viewModel.userAnswer,
             onValueChange = {
-                userAnswer = it
+                viewModel.userAnswer = it
             },
             label = {
                 Text("Enter your answer")
@@ -83,11 +62,11 @@ fun GameScreen() {
 
         Button(
             onClick = {
-                if (userAnswer == correctAnswer) {
-                    score++
-                    if (currentWordIndex < words.size - 1) {
-                        currentWordIndex++
-                        userAnswer = ""
+                if (viewModel.userAnswer == viewModel.words[viewModel.currentWordIndex]) {
+                    viewModel.score++
+                    if (viewModel.currentWordIndex < viewModel.words.size - 1) {
+                        viewModel.currentWordIndex++
+                        viewModel.userAnswer = ""
                     }
                 }
             }
@@ -96,7 +75,7 @@ fun GameScreen() {
         }
 
         Text(
-            text = "Score: $score"
+            text = "Score: ${viewModel.score}"
         )
     }
 }
